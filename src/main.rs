@@ -1,4 +1,4 @@
-use std::{env, fs, process};
+use std::{env, fs, process, error::Error};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -11,7 +11,11 @@ fn main() {
     println!("Searching for {}", config.query);
     println!("In file {}", config.file_path);
 
-    run(config);
+    // We only care about the Err here, so unwrap_or_else is uneeded
+    if let Err(e) = run(config) {
+        println!("Application error: {e}");
+        process::exit(1);
+    }
 }
 
 struct Config {
@@ -34,8 +38,10 @@ impl Config {
     }
 }
 
-fn run(config: Config) {
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents =
-        fs::read_to_string(config.file_path).expect("Should have been able to read the file");
+        fs::read_to_string(config.file_path)?;
     println!("With text \n{contents}");
+    // Idiomatic way of indicating the function is called for side effects only
+    Ok(())
 }
