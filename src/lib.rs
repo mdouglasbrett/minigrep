@@ -21,7 +21,11 @@ impl Config {
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    // TODO: let contents = fs::read_to_string(config.file_path)?;
+    let contents = fs::read_to_string(config.file_path)?;
+
+    for line in search(&config.query, &contents) {
+        println!("{line}");
+    }
     // Idiomatic way of indicating the function is called for side effects only
     Ok(())
 }
@@ -29,7 +33,13 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 // The data referenced _by_ a slice needs to be valid for the reference to be
 // valid. Hence the lifetime for contents and the return value
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    vec![]
+    let mut results = Vec::new();
+    for line in contents.lines() {
+        if line.contains(query) {
+            results.push(line);
+        }
+    }
+    results
 }
 
 #[cfg(test)]
@@ -40,9 +50,9 @@ mod tests {
     fn one_result() {
         let query = "duct";
         let contents = "\
-                        Rust:
-                        safe, fast, productive.
-                        Pick three.";
+Rust:
+safe, fast, productive.
+Pick three.";
 
         assert_eq!(vec!["safe, fast, productive."], search(query, contents));
     }
