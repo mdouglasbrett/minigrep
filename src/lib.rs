@@ -1,4 +1,4 @@
-use std::{fs, error::Error};
+use std::{error::Error, fs};
 
 pub struct Config {
     pub query: String,
@@ -21,9 +21,29 @@ impl Config {
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let contents =
-        fs::read_to_string(config.file_path)?;
-    println!("With text \n{contents}");
+    // TODO: let contents = fs::read_to_string(config.file_path)?;
     // Idiomatic way of indicating the function is called for side effects only
     Ok(())
+}
+
+// The data referenced _by_ a slice needs to be valid for the reference to be
+// valid. Hence the lifetime for contents and the return value
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    vec![]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn one_result() {
+        let query = "duct";
+        let contents = "\
+                        Rust:
+                        safe, fast, productive.
+                        Pick three.";
+
+        assert_eq!(vec!["safe, fast, productive."], search(query, contents));
+    }
 }

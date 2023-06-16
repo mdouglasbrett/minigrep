@@ -9,8 +9,6 @@ fn main() {
         process::exit(1);
     });
 
-    println!("Searching for {}", config.query);
-    println!("In file {}", config.file_path);
 
     // We only care about the Err here, so unwrap_or_else is uneeded
     if let Err(e) = minigrep::run(config) {
