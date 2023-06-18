@@ -11,7 +11,7 @@ impl Config {
         // args[0] is always the name of the program, as you'd expect
         args.next();
 
-        // I was wrong thinking that the .clone() issue was going to be 
+        // I was wrong thinking that the .clone() issue was going to be
         // solved using something like lifetimes to leverage borrowing. The
         // the book is using an iterator to take ownership of the value via a
         // move (as far as I understand it anyway)
@@ -53,25 +53,18 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 // The data referenced _by_ a slice needs to be valid for the reference to be
 // valid. Hence the lifetime for contents and the return value
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let mut results = Vec::new();
-    for line in contents.lines() {
-        if line.contains(query) {
-            results.push(line);
-        }
-    }
-    results
+    contents
+        .lines()
+        .filter(|line| line.contains(query))
+        .collect()
 }
 
 pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let query = query.to_lowercase();
-    let mut results = Vec::new();
-
-    for line in contents.lines() {
-        if line.to_lowercase().contains(&query) {
-            results.push(line);
-        }
-    }
-    results
+    contents
+        .lines()
+        .filter(|line| line.to_lowercase().contains(&query))
+        .collect()
 }
 
 #[cfg(test)]
